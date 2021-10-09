@@ -1,0 +1,16 @@
+{
+  "name": "d-ass-wikicrawler",
+  "version": "1.0.0",
+  "description": "For crawling the dauntless wiki with data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "puppeteer": "^10.4.0",
+    "yargs": "^17.2.1"
+  }
+}
