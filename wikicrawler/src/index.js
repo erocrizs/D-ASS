@@ -1,11 +1,13 @@
+const fs = require('fs');
 const _ = require('lodash');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
 const CONSTANTS = require('./constants');
+const { crawl } = require('./crawler');
 
 parseArgs()
-  .then(crawl)
+  .then(start)
   .then(() => process.exit(0))
   .catch(error => {
     console.error(error);
@@ -18,7 +20,7 @@ async function parseArgs () {
       'filepath',
       {
         alias: 'f',
-        default: 'data.json',
+        default: CONSTANTS.DEFAULT.FILEPATH,
         describe: 'filepath where the crawled data saved into',
         type: 'string'
       }
@@ -43,25 +45,26 @@ async function parseArgs () {
     )
     .argv;
 
-  const toCrawl = [];
+  const types = [];
   
   if (_.includes(args.equipments, 'all')) {
-    toCrawl.push(...CONSTANTS.DATA.EQUIPMENT_TYPES);
+    types.push(...CONSTANTS.DATA.EQUIPMENT_TYPES);
   }
   else if (args.equipments?.length) {
-    toCrawl.push(...args.equipments);
+    types.push(...args.equipments);
   }
 
   if (_.includes(args.weapons, 'all')) {
-    toCrawl.push(...CONSTANTS.DATA.WEAPON_TYPES);
+    types.push(...CONSTANTS.DATA.WEAPON_TYPES);
   }
   else if (args.weapons?.length) {
-    toCrawl.push(...args.weapons);
+    types.push(...args.weapons);
   }
 
-  return {toCrawl, filepath: args.filepath};
+  return {types: types, filepath: args.filepath};
 }
 
-async function crawl (args) {
-  console.log(args); 
+async function start (args) {
+  const data = await crawl(args.types);
+  fs.writeFileSync(args.filepath, JSON.stringify(data));
 }

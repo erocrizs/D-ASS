@@ -22,10 +22,15 @@ const ARMOUR_TYPES = [
   'legs'
 ];
 
+const FILEPATH = 'output.json';
+
 module.exports = {
   DATA: {
     WEAPON_TYPES,
     EQUIPMENT_TYPES,
     ARMOUR_TYPES
+  },
+  DEFAULT: {
+    FILEPATH
   }
 };
