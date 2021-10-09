@@ -12,7 +12,7 @@ async function crawl (type, page) {
     pageView: { extract }
   } = crawlTypes[type];
 
-  await page.goto(listUrl);
+  await page.goto(listUrl, { waitUntil: 'networkidle2' });
   const urls = await page.evaluate(getUrls);
 
   const response = {
@@ -22,7 +22,7 @@ async function crawl (type, page) {
 
   for (const url of urls) {
     try {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const data = await page.evaluate(extract);
       response.data.push(data);
     }
