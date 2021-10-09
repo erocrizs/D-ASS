@@ -65,6 +65,9 @@ async function parseArgs () {
 }
 
 async function start (args) {
+  console.log('Crawling for data...');
   const data = await crawl(args.types);
+  console.log(`Done crawling! Writing data into ${args.filepath}...`);
   fs.writeFileSync(args.filepath, JSON.stringify(data));
+  console.log('Done writing data');
 }
