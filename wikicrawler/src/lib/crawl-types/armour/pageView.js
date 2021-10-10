@@ -7,7 +7,7 @@ async function extract () {
   
   for (const infoRow of infobox.querySelectorAll('tr')) {
     const labelCell = infoRow.querySelector('td.infoboxlabel');
-    const valueCell = infoRow.querySelector('td div.infoboxdetails');
+    let valueCell = infoRow.querySelector('td div.infoboxdetails');
 
     if (!labelCell) {
       continue;
@@ -15,23 +15,28 @@ async function extract () {
 
     const label = labelCell.innerText.toLowerCase().trim();
 
+    if (!valueCell) {
+      const nextRow = labelCell.parentElement.nextElementSibling;
+      valueCell = nextRow.querySelector('div.infoboxdetails');
+    }
+
     if (valueCell) {
-      infoMap[label] = valueCell.innerText.toLowerCase().trim();
+      infoMap[label] = valueCell.innerText.trim();
     }
     else {
       infoMap[label] = true;
     }
   }
 
-  const behemoth = infoMap.behemoth === 'none' ? null : infoMap.behemoth;
-  const element = infoMap.element;
-  const perk = infoMap.perk === 'none' ? null : infoMap.perk;
-  const type = infoMap['armour type'];
-  const slots = infoMap['cell slot'] === 'none'
+  const behemoth = infoMap.behemoth === 'None' ? null : infoMap.behemoth.toLowerCase();
+  const element = infoMap.element.toLowerCase();
+  const type = infoMap['armour type'].toLowerCase();
+  const slots = infoMap['cell slot'] === 'None'
     ? []
-    : [infoMap['cell slot'].toLowerCase()];
-  const bond = (infoMap.perk === 'bond');
-  const uniqueEffect = !!infoMap['unique effect'];
+    : infoMap['cell slot'].split('\n').map(x => x.trim().toLowerCase());
+  const uniqueEffect = infoMap['unique effect'] === 'None'
+    ? null
+    : infoMap['unique effect'];
 
   const detailTable = document.querySelector('table.wikitable');
   const detailHeaders = Array.from(detailTable.querySelectorAll('tr th'))
@@ -72,7 +77,7 @@ async function extract () {
     }
 
     const perks = {};
-    if (perk) {
+    if (rawData.perk) {
       // parse perks
       for (const perkDetail of rawData.perk.split('\\n')) {
         const words = perkDetail.trim().split(/\s+/);
@@ -109,6 +114,8 @@ async function extract () {
 
     detailMap[label] = result;
   }
+
+  const bond = !!detailMap.base.perk.bond;
 
   return {
     url,
